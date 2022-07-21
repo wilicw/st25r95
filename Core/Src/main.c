@@ -115,6 +115,7 @@ int main(void) {
   st25r95_init();
   volatile st25r95_status_t res;
   st25r95_IDN();
+  st25r95_off();
   /* USER CODE END 2 */
 
   /* Infinite loop */

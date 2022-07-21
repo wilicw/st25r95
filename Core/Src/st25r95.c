@@ -66,3 +66,20 @@ st25r95_status_t st25r95_IDN() {
   if (!(res[2] == 'N' && res[3] == 'F' && res[4] == 'C')) return ST25_INVALID_DEVICE;
   return ST25_OK;
 }
+
+st25r95_status_t st25r95_off() {
+  tx_len = 0;
+  tx_buffer[tx_len++] = ST25_PS;
+  tx_len++;
+  tx_buffer[tx_len++] = ST25_PROTOCOL_OFF;
+  tx_buffer[tx_len++] = 0;
+  tx_buffer[1] = tx_len - 2;
+
+  st25r95_nss(1);
+  st25r95_spi_tx();
+  st25r95_nss(0);
+
+  uint8_t *res = st25r95_response();
+  if (res[0] != 0) return ST25_ERROR;
+  return ST25_OK;
+}

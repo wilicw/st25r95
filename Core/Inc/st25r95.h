@@ -32,6 +32,13 @@ typedef enum {
 } st25r95_protocol_t;
 
 typedef enum {
+  ST25_26K_106K,
+  ST25_52K_212K,
+  ST25_6K_424K,
+  ST25_848K,
+} st25r95_rate_t;
+
+typedef enum {
   ST25_OK,
   ST25_ERROR,
   ST25_INVALID_DEVICE,
@@ -43,5 +50,6 @@ void st25r95_reset();
 
 st25r95_status_t st25r95_IDN();
 
+st25r95_status_t st25r95_off();
 
 #endif
