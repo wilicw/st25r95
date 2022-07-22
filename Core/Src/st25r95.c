@@ -74,7 +74,7 @@ st25r95_status_t st25r95_off() {
   tx_len++;
   tx_buffer[tx_len++] = ST25_PROTOCOL_OFF;
   tx_buffer[tx_len++] = 0;
-  tx_buffer[1] = tx_len - 3;
+  tx_buffer[2] = tx_len - 3;
 
   st25r95_nss(1);
   st25r95_spi_tx();
@@ -92,7 +92,7 @@ st25r95_status_t st25r95_14443A(st25r95_rate_t tx_rate, st25r95_rate_t rx_rate) 
   tx_len++;
   tx_buffer[tx_len++] = ST25_PROTOCOL_14443A;
   tx_buffer[tx_len++] = tx_rate << 6 | rx_rate << 4;
-  tx_buffer[1] = tx_len - 3;
+  tx_buffer[2] = tx_len - 3;
 
   st25r95_nss(1);
   st25r95_spi_tx();
