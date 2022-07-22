@@ -52,4 +52,6 @@ st25r95_status_t st25r95_IDN();
 
 st25r95_status_t st25r95_off();
 
+st25r95_status_t st25r95_14443A(st25r95_rate_t, st25r95_rate_t);
+
 #endif
