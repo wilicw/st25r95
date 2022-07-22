@@ -69,11 +69,12 @@ st25r95_status_t st25r95_IDN() {
 
 st25r95_status_t st25r95_off() {
   tx_len = 0;
+  tx_buffer[tx_len++] = ST25_SEND;
   tx_buffer[tx_len++] = ST25_PS;
   tx_len++;
   tx_buffer[tx_len++] = ST25_PROTOCOL_OFF;
   tx_buffer[tx_len++] = 0;
-  tx_buffer[1] = tx_len - 2;
+  tx_buffer[1] = tx_len - 3;
 
   st25r95_nss(1);
   st25r95_spi_tx();
