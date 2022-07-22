@@ -115,16 +115,16 @@ int main(void) {
   st25r95_init();
   volatile st25r95_status_t res;
   st25r95_IDN();
-  st25r95_off();
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1) {
-    HAL_Delay(1000);
+    HAL_Delay(3000);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+    st25r95_14443A(ST25_26K_106K, ST25_26K_106K);
   }
   /* USER CODE END 3 */
 }
