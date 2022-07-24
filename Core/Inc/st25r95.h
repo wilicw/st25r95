@@ -81,4 +81,6 @@ st25r95_status_t st25r95_write_ARC_index(uint8_t);
 
 st25r95_status_t st25r95_write_ARC(uint8_t, uint8_t);
 
+st25r95_status_t st25r95_echo();
+
 #endif
