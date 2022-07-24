@@ -137,3 +137,38 @@ st25r95_status_t st25r95_write_timerw(uint8_t data) {
   uint8_t *res = st25r95_response();
   return res[0];
 }
+
+st25r95_status_t st25r95_write_ARC_index(uint8_t index) {
+  tx_len = 0;
+  tx_buffer[tx_len++] = ST25_SEND;
+  tx_buffer[tx_len++] = ST25_WR;
+  tx_buffer[tx_len++] = 0x3;
+  tx_buffer[tx_len++] = 0x68;
+  tx_buffer[tx_len++] = 0x0;
+  tx_buffer[tx_len++] = index;
+
+  st25r95_nss(1);
+  st25r95_spi_tx();
+  st25r95_nss(0);
+
+  uint8_t *res = st25r95_response();
+  return res[0];
+}
+
+st25r95_status_t st25r95_write_ARC(uint8_t index, uint8_t data) {
+  tx_len = 0;
+  tx_buffer[tx_len++] = ST25_SEND;
+  tx_buffer[tx_len++] = ST25_WR;
+  tx_buffer[tx_len++] = 0x4;
+  tx_buffer[tx_len++] = 0x68;
+  tx_buffer[tx_len++] = 0x1;
+  tx_buffer[tx_len++] = index;
+  tx_buffer[tx_len++] = data;
+
+  st25r95_nss(1);
+  st25r95_spi_tx();
+  st25r95_nss(0);
+
+  uint8_t *res = st25r95_response();
+  return res[0];
+}
