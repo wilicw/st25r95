@@ -119,3 +119,21 @@ st25r95_status_t st25r95_read_reg(uint8_t address, uint8_t *data) {
   if (res[0] == ST25_OK) *data = res[2];
   return res[0];
 }
+
+st25r95_status_t st25r95_write_timerw(uint8_t data) {
+  tx_len = 0;
+  tx_buffer[tx_len++] = ST25_SEND;
+  tx_buffer[tx_len++] = ST25_WR;
+  tx_buffer[tx_len++] = 0x3;
+  tx_buffer[tx_len++] = 0x3A;
+  tx_buffer[tx_len++] = 0x0;
+  tx_buffer[tx_len++] = data;
+  tx_buffer[tx_len++] = 0x4;
+
+  st25r95_nss(1);
+  st25r95_spi_tx();
+  st25r95_nss(0);
+
+  uint8_t *res = st25r95_response();
+  return res[0];
+}
