@@ -189,3 +189,33 @@ st25r95_status_t st25r95_echo() {
   uint8_t *res = st25r95_response();
   return res[0];
 }
+
+st25r95_status_t st25r95_14443A_detect() {
+  uint8_t data[10] = {0xff};
+  st25r95_14443A_REQA(data);
+  if (data[0] == 0xff) return ST25_EFrameWaitTOut;
+  if (data[0] & 0b00100000) {
+    return ST25_PASS;
+  }
+  uint8_t UID_size = data[0] >> 6;
+  return ST25_EFrameRecvOK;
+}
+
+void st25r95_14443A_REQA(uint8_t *data) {
+  tx_len = 0;
+  tx_buffer[tx_len++] = ST25_SEND;
+  tx_buffer[tx_len++] = ST25_SR;
+  tx_buffer[tx_len++] = 0x2;
+  tx_buffer[tx_len++] = 0x26;
+  tx_buffer[tx_len++] = 0x7;
+
+  st25r95_nss(1);
+  st25r95_spi_tx();
+  st25r95_nss(0);
+
+  uint8_t *res = st25r95_response();
+  if (res[0] != ST25_EFrameRecvOK) return;
+
+  memcpy(data, res + 2, res[1]);
+
+}
