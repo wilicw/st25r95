@@ -125,6 +125,8 @@ int main(void) {
 
     /* USER CODE BEGIN 3 */
     st25r95_14443A(ST25_26K_106K, ST25_26K_106K);
+    uint8_t data;
+    st25r95_read_reg(0x69, &data);
   }
   /* USER CODE END 3 */
 }

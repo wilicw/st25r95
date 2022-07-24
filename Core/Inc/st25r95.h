@@ -73,4 +73,5 @@ st25r95_status_t st25r95_off();
 
 st25r95_status_t st25r95_14443A(st25r95_rate_t, st25r95_rate_t);
 
+st25r95_status_t st25r95_read_reg(uint8_t, uint8_t*);
 #endif
