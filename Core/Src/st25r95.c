@@ -29,6 +29,7 @@ void st25r95_spi_byte(uint8_t data) {
 }
 
 uint8_t *st25r95_response() {
+  st25r95_delay(1);
   static uint8_t rx_data[256];
   st25r95_nss(1);
   st25r95_spi_byte(ST25_READ);
