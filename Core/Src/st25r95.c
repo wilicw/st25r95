@@ -34,6 +34,10 @@ uint8_t *st25r95_response() {
   st25r95_nss(1);
   st25r95_spi_byte(ST25_READ);
   st25r95_rx(rx_data, 1);
+  if (rx_data[0] == ST25_ECHO) {
+    st25r95_nss(0);
+    return rx_data;
+  }
   st25r95_rx(rx_data + 1, 1);
   st25r95_rx(rx_data + 2, *(rx_data + 1));
   st25r95_nss(0);
@@ -164,6 +168,19 @@ st25r95_status_t st25r95_write_ARC(uint8_t index, uint8_t data) {
   tx_buffer[tx_len++] = 0x1;
   tx_buffer[tx_len++] = index;
   tx_buffer[tx_len++] = data;
+
+  st25r95_nss(1);
+  st25r95_spi_tx();
+  st25r95_nss(0);
+
+  uint8_t *res = st25r95_response();
+  return res[0];
+}
+
+st25r95_status_t st25r95_echo() {
+  tx_len = 0;
+  tx_buffer[tx_len++] = ST25_SEND;
+  tx_buffer[tx_len++] = ST25_ECHO;
 
   st25r95_nss(1);
   st25r95_spi_tx();
