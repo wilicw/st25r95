@@ -62,7 +62,7 @@ st25r95_status_t st25r95_IDN() {
 
   st25r95_delay(10);
   uint8_t *res = st25r95_response();
-  if (res[0] != 0) return ST25_ERROR;
+  if (res[0] != 0) return ST25_INVALID_DEVICE;
   if (!(res[2] == 'N' && res[3] == 'F' && res[4] == 'C')) return ST25_INVALID_DEVICE;
   return ST25_OK;
 }
@@ -81,8 +81,7 @@ st25r95_status_t st25r95_off() {
   st25r95_nss(0);
 
   uint8_t *res = st25r95_response();
-  if (res[0] != 0) return ST25_ERROR;
-  return ST25_OK;
+  return res[0];
 }
 
 st25r95_status_t st25r95_14443A(st25r95_rate_t tx_rate, st25r95_rate_t rx_rate) {
@@ -99,6 +98,5 @@ st25r95_status_t st25r95_14443A(st25r95_rate_t tx_rate, st25r95_rate_t rx_rate) 
   st25r95_nss(0);
 
   uint8_t *res = st25r95_response();
-  if (res[0] != 0) return ST25_ERROR;
-  return ST25_OK;
+  return res[0];
 }

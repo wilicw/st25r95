@@ -40,8 +40,27 @@ typedef enum {
 
 typedef enum {
   ST25_OK,
-  ST25_ERROR,
   ST25_INVALID_DEVICE,
+
+  ST25_EEmdSOFerror23 = 0x63,
+  ST25_EEmdSOFerror10 = 0x65,
+  ST25_EEmdEgterror = 0x66,
+  ST25_ETr1TooBigTooLong = 0x67,
+  ST25_ETr1TooSmall = 0x68,
+  ST25_EinternalError = 0x7,
+  ST25_EFrameRecvOK = 0x80,
+  ST25_EUserStop = 0x85,
+  ST25_ECommError = 0x86,
+  ST25_EFrameWaitTOut = 0x87,
+  ST25_EInvalidSof = 0x88,
+  ST25_EBufOverflow = 0x89,
+  ST25_EFramingError = 0x8A,
+  ST25_EEgtError = 0x8B,
+  ST25_EInvalidLen = 0x8C,
+  ST25_ECrcError = 0x8D,
+  ST25_ERecvLost = 0x8E,
+  ST25_ENoField = 0x8F,
+  ST25_EUnintByte = 0x90,
 } st25r95_status_t;
 
 void st25r95_init();
