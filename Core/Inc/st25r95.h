@@ -4,6 +4,11 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+
+#ifndef __weak
+#define __weak   __attribute__((weak))
+#endif
 
 typedef enum {
   ST25_SEND = 0x0,
@@ -41,6 +46,8 @@ typedef enum {
 typedef enum {
   ST25_OK,
   ST25_INVALID_DEVICE,
+  ST25_PASS,
+  ST25_BCC_ERROR,
 
   ST25_EEmdSOFerror23 = 0x63,
   ST25_EEmdSOFerror10 = 0x65,
@@ -63,6 +70,12 @@ typedef enum {
   ST25_EUnintByte = 0x90,
 } st25r95_status_t;
 
+typedef enum {
+  ISO14443A_SINGLE = 0x0,
+  ISO14443A_DOUBLE = 0x1,
+  ISO14443A_TRIPLE = 0x2,
+} UID_size_t;
+
 void st25r95_init();
 
 void st25r95_reset();
@@ -73,7 +86,7 @@ st25r95_status_t st25r95_off();
 
 st25r95_status_t st25r95_14443A(st25r95_rate_t, st25r95_rate_t);
 
-st25r95_status_t st25r95_read_reg(uint8_t, uint8_t*);
+st25r95_status_t st25r95_read_reg(uint8_t, uint8_t *);
 
 st25r95_status_t st25r95_write_timerw(uint8_t);
 
@@ -82,5 +95,13 @@ st25r95_status_t st25r95_write_ARC_index(uint8_t);
 st25r95_status_t st25r95_write_ARC(uint8_t, uint8_t);
 
 st25r95_status_t st25r95_echo();
+
+void st25r95_14443A_REQA(uint8_t *);
+
+void st25r95_14443A_ANTICOLLISION(uint8_t, uint8_t *);
+
+void st25r95_14443A_select(uint8_t, uint8_t *, uint8_t, uint8_t, uint8_t, uint8_t);
+
+uint8_t st25r95_14443A_detect(uint8_t *);
 
 #endif

@@ -116,21 +116,22 @@ int main(void) {
   st25r95_IDN();
   HAL_Delay(1000);
   st25r95_status_t err;
-  err = st25r95_14443A(ST25_26K_106K, ST25_26K_106K);
-  if (err != ST25_OK) printf("meow");
-  err = st25r95_write_timerw(0x58);
-  if (err != ST25_OK) printf("meow");
-  err = st25r95_write_ARC(1, 0xD3);
-  if (err != ST25_OK) printf("meow");
+  st25r95_14443A(ST25_26K_106K, ST25_26K_106K);
+  st25r95_write_timerw(0x58);
+  st25r95_write_ARC(1, 0xD3);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  uint8_t uid[10];
   while (1) {
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    HAL_Delay(3000);
+    if (st25r95_14443A_detect(uid)) {
+      st25r95_delay(1);
+    }
+//    HAL_Delay(3000);
   }
   /* USER CODE END 3 */
 }

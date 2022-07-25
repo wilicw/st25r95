@@ -4,15 +4,15 @@
  * Some BSP functions
  */
 
-void __attribute__((weak)) st25r95_delay(uint32_t time) {}
+__weak void st25r95_delay(uint32_t time) {}
 
-void __attribute__((weak)) st25r95_nss(uint8_t enable) {}
+__weak void st25r95_nss(uint8_t enable) {}
 
-void __attribute__((weak)) st25r95_tx(uint8_t *data, size_t len) {}
+__weak void st25r95_tx(uint8_t *data, size_t len) {}
 
-void __attribute__((weak)) st25r95_rx(uint8_t *data, size_t len) {}
+__weak void st25r95_rx(uint8_t *data, size_t len) {}
 
-void __attribute__((weak)) st25r95_irq_pulse() {}
+__weak void st25r95_irq_pulse() {}
 
 volatile static uint8_t tx_buffer[256];
 volatile static size_t tx_len;
@@ -188,4 +188,100 @@ st25r95_status_t st25r95_echo() {
 
   uint8_t *res = st25r95_response();
   return res[0];
+}
+
+uint8_t st25r95_14443A_detect(uint8_t *ret_uid) {
+  uint8_t data[10] = {0xff};
+  st25r95_14443A_REQA(data);
+  if (data[0] == 0xff) return 0;
+  if (data[0] & 0b00100000) {
+    return 0;
+  }
+
+  uint8_t UID[10];
+  uint8_t UID_size = data[0] >> 6;
+
+  for (uint8_t i = 0; i < UID_size + 1; i++) {
+    data[0] = 0xff;
+    st25r95_14443A_ANTICOLLISION(i, data);
+    if (data[0] == 0xff) return 0;
+    if (data[0] ^ data[1] ^ data[2] ^ data[3] ^ data[4]) return 0;
+    UID[4 * i + 0] = data[0];
+    UID[4 * i + 1] = data[1];
+    UID[4 * i + 2] = data[2];
+    UID[4 * i + 3] = data[3];
+    st25r95_14443A_select(i, data, data[0], data[1], data[2], data[3]);
+    if (data[0] & 0x4)
+      continue;
+    else
+      break;
+  }
+
+  memset(ret_uid, 0, 10);
+  memcpy(ret_uid, UID, 10);
+  return 1;
+}
+
+void st25r95_14443A_REQA(uint8_t *data) {
+  tx_len = 0;
+  tx_buffer[tx_len++] = ST25_SEND;
+  tx_buffer[tx_len++] = ST25_SR;
+  tx_buffer[tx_len++] = 0x2;
+  tx_buffer[tx_len++] = 0x26;
+  tx_buffer[tx_len++] = 0x7;
+
+  st25r95_nss(1);
+  st25r95_spi_tx();
+  st25r95_nss(0);
+
+  uint8_t *res = st25r95_response();
+  if (res[0] != ST25_EFrameRecvOK) return;
+
+  memcpy(data, res + 2, res[1]);
+
+}
+
+const static uint8_t cascade_level[] = {0x93, 0x95, 0x97};
+
+void st25r95_14443A_ANTICOLLISION(uint8_t level, uint8_t *data) {
+  tx_len = 0;
+  tx_buffer[tx_len++] = ST25_SEND;
+  tx_buffer[tx_len++] = ST25_SR;
+  tx_buffer[tx_len++] = 0x03;
+  tx_buffer[tx_len++] = cascade_level[level];
+  tx_buffer[tx_len++] = 0x20;
+  tx_buffer[tx_len++] = 0x08;
+
+  st25r95_nss(1);
+  st25r95_spi_tx();
+  st25r95_nss(0);
+
+  uint8_t *res = st25r95_response();
+  if (res[0] != ST25_EFrameRecvOK) return;
+
+  memcpy(data, res + 2, res[1]);
+}
+
+void st25r95_14443A_select(uint8_t level, uint8_t *data, uint8_t uid0, uint8_t uid1, uint8_t uid2, uint8_t uid3) {
+  tx_len = 0;
+  tx_buffer[tx_len++] = ST25_SEND;
+  tx_buffer[tx_len++] = ST25_SR;
+  tx_buffer[tx_len++] = 0x08;
+  tx_buffer[tx_len++] = cascade_level[level];
+  tx_buffer[tx_len++] = 0x70;
+  tx_buffer[tx_len++] = uid0;
+  tx_buffer[tx_len++] = uid1;
+  tx_buffer[tx_len++] = uid2;
+  tx_buffer[tx_len++] = uid3;
+  tx_buffer[tx_len++] = uid0 ^ uid1 ^ uid2 ^ uid3;
+  tx_buffer[tx_len++] = 0x28;
+
+  st25r95_nss(1);
+  st25r95_spi_tx();
+  st25r95_nss(0);
+
+  uint8_t *res = st25r95_response();
+  if (res[0] != ST25_EFrameRecvOK) return;
+
+  memcpy(data, res + 2, res[1]);
 }
