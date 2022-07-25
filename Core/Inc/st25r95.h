@@ -6,6 +6,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifndef __weak
+  #define __weak   __attribute__((weak))
+#endif
+
 typedef enum {
   ST25_SEND = 0x0,
   ST25_RESET = 0x1,

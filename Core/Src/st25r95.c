@@ -4,15 +4,15 @@
  * Some BSP functions
  */
 
-void __attribute__((weak)) st25r95_delay(uint32_t time) {}
+__weak void st25r95_delay(uint32_t time) {}
 
-void __attribute__((weak)) st25r95_nss(uint8_t enable) {}
+__weak void st25r95_nss(uint8_t enable) {}
 
-void __attribute__((weak)) st25r95_tx(uint8_t *data, size_t len) {}
+__weak void st25r95_tx(uint8_t *data, size_t len) {}
 
-void __attribute__((weak)) st25r95_rx(uint8_t *data, size_t len) {}
+__weak void st25r95_rx(uint8_t *data, size_t len) {}
 
-void __attribute__((weak)) st25r95_irq_pulse() {}
+__weak void st25r95_irq_pulse() {}
 
 volatile static uint8_t tx_buffer[256];
 volatile static size_t tx_len;
