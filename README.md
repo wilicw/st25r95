@@ -51,9 +51,9 @@ int main() {
   // Set protocol to ISO/IEC 14443A
   st25r95_14443A(ST25_26K_106K, ST25_26K_106K);
   // Set Analog register value for Modulation Index and Receiver Gain.
-  st25r95_write_timerw(0x58);
-  // Fine-tuning the Timer Window (TimerW) register.
   st25r95_write_ARC(1, 0xD3);
+  // Fine-tuning the Timer Window (TimerW) register.
+  st25r95_write_timerw(0x58);
   
   // Define a 10byte uid variable.
   uint8_t uid[10];
