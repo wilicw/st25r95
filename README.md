@@ -55,8 +55,12 @@ int main() {
   // Fine-tuning the Timer Window (TimerW) register.
   st25r95_write_ARC(1, 0xD3);
   
+  // Define a 10byte uid variable.
+  uint8_t uid[10];
   while(1) {
-    // TODO
+    if (st25r95_14443A_detect(uid)) {
+      debug_print(uid, 10);
+    }
   }
   
   return 0;
