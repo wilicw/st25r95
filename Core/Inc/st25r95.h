@@ -47,6 +47,7 @@ typedef enum {
   ST25_OK,
   ST25_INVALID_DEVICE,
   ST25_PASS,
+  ST25_BCC_ERROR,
 
   ST25_EEmdSOFerror23 = 0x63,
   ST25_EEmdSOFerror10 = 0x65,
@@ -97,6 +98,10 @@ st25r95_status_t st25r95_echo();
 
 void st25r95_14443A_REQA(uint8_t *);
 
-st25r95_status_t st25r95_14443A_detect();
+void st25r95_14443A_ANTICOLLISION(uint8_t, uint8_t *);
+
+void st25r95_14443A_select(uint8_t, uint8_t *, uint8_t, uint8_t, uint8_t, uint8_t);
+
+uint8_t st25r95_14443A_detect(uint8_t *);
 
 #endif
