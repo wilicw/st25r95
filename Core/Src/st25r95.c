@@ -227,8 +227,8 @@ void st25r95_14443A_REQA(uint8_t *data) {
   tx_buffer[tx_len++] = ST25_SEND;
   tx_buffer[tx_len++] = ST25_SR;
   tx_buffer[tx_len++] = 0x2;
-  tx_buffer[tx_len++] = 0x26;
-  tx_buffer[tx_len++] = 0x7;
+  tx_buffer[tx_len++] = REQA;
+  tx_buffer[tx_len++] = 7; // REQA is a 7bits command.
 
   st25r95_nss(1);
   st25r95_spi_tx();
@@ -241,7 +241,7 @@ void st25r95_14443A_REQA(uint8_t *data) {
 
 }
 
-const static uint8_t cascade_level[] = {0x93, 0x95, 0x97};
+const static uint8_t cascade_level[] = {CL_1, CL_2, CL_3};
 
 void st25r95_14443A_ANTICOLLISION(uint8_t level, uint8_t *data) {
   tx_len = 0;
@@ -249,7 +249,7 @@ void st25r95_14443A_ANTICOLLISION(uint8_t level, uint8_t *data) {
   tx_buffer[tx_len++] = ST25_SR;
   tx_buffer[tx_len++] = 0x03;
   tx_buffer[tx_len++] = cascade_level[level];
-  tx_buffer[tx_len++] = 0x20;
+  tx_buffer[tx_len++] = 0x20; // NVB
   tx_buffer[tx_len++] = 0x08;
 
   st25r95_nss(1);
@@ -274,7 +274,7 @@ void st25r95_14443A_select(uint8_t level, uint8_t *data, uint8_t uid0, uint8_t u
   tx_buffer[tx_len++] = uid2;
   tx_buffer[tx_len++] = uid3;
   tx_buffer[tx_len++] = uid0 ^ uid1 ^ uid2 ^ uid3;
-  tx_buffer[tx_len++] = 0x28;
+  tx_buffer[tx_len++] = tx_flag_AppendCRC | 8;
 
   st25r95_nss(1);
   st25r95_spi_tx();

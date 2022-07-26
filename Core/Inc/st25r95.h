@@ -76,6 +76,21 @@ typedef enum {
   ISO14443A_TRIPLE = 0x2,
 } UID_size_t;
 
+typedef enum {
+  REQA = 0x26,
+  WUPA = 0x52,
+  CL_1 = 0x93,
+  CL_2 = 0x95,
+  CL_3 = 0x97,
+} ISO14443_command;
+
+typedef enum {
+  tx_flag_Topaz = 0x80,
+  tx_flag_SplitFrame = 0x40,
+  tx_flag_AppendCRC = 0x20,
+  tx_flag_ParityFraming = 0x08,
+} ISO14443_tx_flag;
+
 void st25r95_init();
 
 void st25r95_reset();
