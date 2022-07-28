@@ -36,6 +36,13 @@ void st25r95_tx(uint8_t *data, size_t len) {
 void st25r95_rx(uint8_t *data, size_t len) {
   HAL_SPI_Receive(&hspi1, data, len, HAL_MAX_DELAY);
 }
+
+// Interrupt callback function
+void HAL_GPIO_EXTI_Callback(uint16_t pin) {
+  if (pin == GPIO_YOUR_IRQ_OUT_INTERRUPT_PIN) {
+    st25r95_irq_callback();
+  }    
+}    
 ```
 
 ### Main function
