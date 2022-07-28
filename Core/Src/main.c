@@ -58,9 +58,6 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-void st25r95_delay(uint32_t time) {
-  HAL_Delay(time);
-}
 
 void st25r95_irq_pulse() {
   HAL_GPIO_WritePin(GPIOA, GPIO_PIN_9, GPIO_PIN_RESET);
@@ -79,6 +76,17 @@ void st25r95_tx(uint8_t *data, size_t len) {
 
 void st25r95_rx(uint8_t *data, size_t len) {
   HAL_SPI_Receive(&hspi1, data, len, HAL_MAX_DELAY);
+}
+
+void st25r95_irq_callback() {
+  extern irq_flag;
+  irq_flag = 1;
+}
+
+void HAL_GPIO_EXTI_Callback(uint16_t pin) {
+  if (pin == GPIO_PIN_10) {
+    st25r95_irq_callback();
+  }
 }
 /* USER CODE END 0 */
 

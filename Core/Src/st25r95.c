@@ -4,8 +4,6 @@
  * Some BSP functions
  */
 
-__weak void st25r95_delay(uint32_t time) {}
-
 __weak void st25r95_nss(uint8_t enable) {}
 
 __weak void st25r95_tx(uint8_t *data, size_t len) {}
@@ -14,8 +12,11 @@ __weak void st25r95_rx(uint8_t *data, size_t len) {}
 
 __weak void st25r95_irq_pulse() {}
 
+__weak void st25r95_irq_callback() {}
+
 volatile static uint8_t tx_buffer[256];
 volatile static size_t tx_len;
+volatile uint8_t irq_flag = 0;
 
 void st25r95_spi_tx() {
   st25r95_tx(tx_buffer, tx_len);
@@ -29,7 +30,8 @@ void st25r95_spi_byte(uint8_t data) {
 }
 
 uint8_t *st25r95_response() {
-  st25r95_delay(1);
+  while(irq_flag==0);
+  irq_flag = 0;
   static uint8_t rx_data[256];
   st25r95_nss(1);
   st25r95_spi_byte(ST25_READ);
@@ -65,7 +67,6 @@ st25r95_status_t st25r95_IDN() {
   st25r95_spi_tx();
   st25r95_nss(0);
 
-  st25r95_delay(10);
   uint8_t *res = st25r95_response();
   if (res[0] != 0) return ST25_INVALID_DEVICE;
   if (!(res[2] == 'N' && res[3] == 'F' && res[4] == 'C')) return ST25_INVALID_DEVICE;
