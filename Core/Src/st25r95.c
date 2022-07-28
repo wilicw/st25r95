@@ -291,6 +291,34 @@ void st25r95_14443A_select(uint8_t level, uint8_t *data, uint8_t uid0, uint8_t u
   memcpy(data, res + 2, res[1]);
 }
 
+st25r95_status_t st25r95_idle(uint8_t DACRef) {
+  tx_len = 0;
+  tx_buffer[tx_len++] = ST25_SEND;
+  tx_buffer[tx_len++] = ST25_IDLE;
+  tx_buffer[tx_len++] = 0x0E;
+  tx_buffer[tx_len++] = ST25_WU_SRC_TagDetection;
+  tx_buffer[tx_len++] = ST25_EC_TagDetection >> 8;
+  tx_buffer[tx_len++] = ST25_EC_TagDetection & 0xFF;
+  tx_buffer[tx_len++] = ST25_WU_CTRL_TagDetection >> 8;
+  tx_buffer[tx_len++] = ST25_WU_CTRL_TagDetection & 0xFF;
+  tx_buffer[tx_len++] = ST25_LEAVE_CTRL_TagDetection >> 8;
+  tx_buffer[tx_len++] = ST25_LEAVE_CTRL_TagDetection & 0xFF;
+  tx_buffer[tx_len++] = 0x20;
+  tx_buffer[tx_len++] = 0x60;
+  tx_buffer[tx_len++] = 0x60;
+  tx_buffer[tx_len++] = DACRef + 8;
+  tx_buffer[tx_len++] = DACRef - 8;
+  tx_buffer[tx_len++] = 0x3F;
+  tx_buffer[tx_len++] = 0x01;
+
+  st25r95_nss(1);
+  st25r95_spi_tx();
+  st25r95_nss(0);
+
+  uint8_t *res = st25r95_response();
+  return res[0];
+}
+
 uint8_t st25r95_calibrate() {
   static uint8_t calibrate_data[] = {
     ST25_SEND,

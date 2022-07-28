@@ -126,14 +126,15 @@ int main(void) {
   /* USER CODE BEGIN WHILE */
 
   uint8_t DACRef = st25r95_calibrate();
+  st25r95_idle(DACRef);
   uint8_t uid[10];
   while (1) {
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    if (st25r95_14443A_detect(uid)) {
-      st25r95_delay(1);
-    }
+//    if (st25r95_14443A_detect(uid)) {
+//      st25r95_delay(1);
+//    }
 //    HAL_Delay(3000);
   }
   /* USER CODE END 3 */

@@ -153,6 +153,8 @@ void st25r95_14443A_select(uint8_t, uint8_t *, uint8_t, uint8_t, uint8_t, uint8_
 
 uint8_t st25r95_14443A_detect(uint8_t *);
 
+st25r95_status_t st25r95_idle(uint8_t);
+
 uint8_t st25r95_calibrate();
 
 #endif
