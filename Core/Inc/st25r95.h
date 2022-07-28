@@ -91,6 +91,38 @@ typedef enum {
   tx_flag_ParityFraming = 0x08,
 } ISO14443_tx_flag;
 
+typedef enum {
+  ST25_WU_SRC_Timeout = 0x01,
+  ST25_WU_SRC_TagDetection = 0x02,
+  ST25_WU_SRC_IRQ = 0x08,
+  ST25_WU_SRC_SS = 0x10,
+  ST25_WU_SRC_32K = 0x00 << 6,
+  ST25_WU_SRC_16K = 0x01 << 6,
+  ST25_WU_SRC_8K = 0x10 << 6,
+  ST25_WU_SRC_4K = 0x11 << 6,
+} st25r95_wu_source;
+
+typedef enum {
+  ST25_EC_Hibernate = 0x0400,
+  ST25_EC_Sleep = 0x0200,
+  ST25_EC_TagDetectorCalibration = 0xA100,
+  ST25_EC_TagDetection = 0x2100,
+} st25r95_enter_ctrl;
+
+typedef enum {
+  ST25_WU_CTRL_Hibernate = 0x0400,
+  ST25_WU_CTRL_Sleep = 0x3800,
+  ST25_WU_CTRL_TagDetectorCalibration = 0xF801,
+  ST25_WU_CTRL_TagDetection = 0x7901,
+} st25r95_wu_ctrl;
+
+typedef enum {
+  ST25_LEAVE_CTRL_Hibernate = 0x1800,
+  ST25_LEAVE_CTRL_Sleep = 0x1800,
+  ST25_LEAVE_CTRL_TagDetectorCalibration = 0x1800,
+  ST25_LEAVE_CTRL_TagDetection = 0x1800,
+} st25r95_leave_ctrl;
+
 void st25r95_init();
 
 void st25r95_reset();
@@ -120,5 +152,7 @@ void st25r95_14443A_ANTICOLLISION(uint8_t, uint8_t *);
 void st25r95_14443A_select(uint8_t, uint8_t *, uint8_t, uint8_t, uint8_t, uint8_t);
 
 uint8_t st25r95_14443A_detect(uint8_t *);
+
+uint8_t st25r95_calibrate();
 
 #endif

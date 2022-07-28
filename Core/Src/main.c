@@ -116,7 +116,6 @@ int main(void) {
   /* USER CODE BEGIN 2 */
   st25r95_init();
   st25r95_IDN();
-  HAL_Delay(1000);
   st25r95_status_t err;
   st25r95_14443A(ST25_26K_106K, ST25_26K_106K);
   st25r95_write_timerw(0x58);
@@ -125,6 +124,8 @@ int main(void) {
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+
+  uint8_t DACRef = st25r95_calibrate();
   uint8_t uid[10];
   while (1) {
     /* USER CODE END WHILE */
