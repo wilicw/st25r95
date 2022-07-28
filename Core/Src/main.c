@@ -26,7 +26,6 @@
 /* USER CODE BEGIN Includes */
 #include "st25r95.h"
 #include <stdlib.h>
-#include <stdio.h>
 #include "core_cm0plus.h"
 /* USER CODE END Includes */
 
@@ -76,11 +75,6 @@ void st25r95_tx(uint8_t *data, size_t len) {
 
 void st25r95_rx(uint8_t *data, size_t len) {
   HAL_SPI_Receive(&hspi1, data, len, HAL_MAX_DELAY);
-}
-
-void st25r95_irq_callback() {
-  extern irq_flag;
-  irq_flag = 1;
 }
 
 void HAL_GPIO_EXTI_Callback(uint16_t pin) {

@@ -12,8 +12,6 @@ __weak void st25r95_rx(uint8_t *data, size_t len) {}
 
 __weak void st25r95_irq_pulse() {}
 
-__weak void st25r95_irq_callback() {}
-
 volatile static uint8_t tx_buffer[256];
 volatile static size_t tx_len;
 volatile uint8_t irq_flag = 0;
@@ -29,8 +27,12 @@ void st25r95_spi_byte(uint8_t data) {
   st25r95_spi_tx();
 }
 
+void st25r95_irq_callback() {
+  irq_flag = 1;
+}
+
 uint8_t *st25r95_response() {
-  while(irq_flag==0);
+  while (irq_flag == 0);
   irq_flag = 0;
   static uint8_t rx_data[256];
   st25r95_nss(1);
@@ -207,6 +209,8 @@ uint8_t st25r95_14443A_detect(uint8_t *ret_uid) {
     st25r95_14443A_ANTICOLLISION(i, data);
     if (data[0] == 0xff) return 0;
     if (data[0] ^ data[1] ^ data[2] ^ data[3] ^ data[4]) return 0;
+    if (data[5] & 0x80) {
+    }
     UID[4 * i + 0] = data[0];
     UID[4 * i + 1] = data[1];
     UID[4 * i + 2] = data[2];

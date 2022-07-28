@@ -95,6 +95,8 @@ void st25r95_init();
 
 void st25r95_reset();
 
+void st25r95_irq_callback();
+
 st25r95_status_t st25r95_IDN();
 
 st25r95_status_t st25r95_off();
