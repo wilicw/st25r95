@@ -123,6 +123,13 @@ typedef enum {
   ST25_LEAVE_CTRL_TagDetection = 0x1800,
 } st25r95_leave_ctrl;
 
+typedef enum {
+  ST25_STATE_NORMAL,
+  ST25_STATE_IDLE,
+} st25r95_state_t;
+
+typedef void (*st25_callback)(uint8_t *);
+
 void st25r95_init();
 
 void st25r95_reset();

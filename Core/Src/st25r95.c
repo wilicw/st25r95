@@ -15,6 +15,8 @@ __weak void st25r95_irq_pulse() {}
 volatile static uint8_t tx_buffer[256];
 volatile static size_t tx_len;
 volatile uint8_t irq_flag = 0;
+static st25r95_state_t reader_state = ST25_STATE_NORMAL;
+static st25r95_protocol_t reader_protocol;
 static uint8_t DACRef = 0x6C;
 
 void st25r95_spi_tx() {
@@ -30,6 +32,33 @@ void st25r95_spi_byte(uint8_t data) {
 
 void st25r95_irq_callback() {
   irq_flag = 1;
+}
+
+void st25r95_service(st25_callback callback) {
+  if (irq_flag == 1) {
+    irq_flag = 0;
+    static uint8_t uid[10];
+    if (reader_state == ST25_STATE_IDLE) {
+      st25r95_init();
+      st25r95_IDN();
+      switch (reader_protocol) {
+        case ST25_PROTOCOL_14443A:
+          st25r95_14443A(ST25_26K_106K, ST25_26K_106K);
+          st25r95_write_timerw(0x58);
+          st25r95_write_ARC(1, 0xD1);
+
+          if (st25r95_14443A_detect(uid)) {
+            callback(uid);
+          }
+
+          st25r95_idle();
+          break;
+        default:
+          break;
+      }
+    }
+    irq_flag = 0;
+  }
 }
 
 uint8_t *st25r95_response() {
@@ -52,6 +81,7 @@ uint8_t *st25r95_response() {
 void st25r95_init() {
   st25r95_reset();
   st25r95_irq_pulse();
+  reader_state = ST25_STATE_NORMAL;
 }
 
 void st25r95_reset() {
@@ -105,6 +135,8 @@ st25r95_status_t st25r95_14443A(st25r95_rate_t tx_rate, st25r95_rate_t rx_rate) 
   st25r95_nss(1);
   st25r95_spi_tx();
   st25r95_nss(0);
+
+  reader_protocol = ST25_PROTOCOL_14443A;
 
   uint8_t *res = st25r95_response();
   return res[0];

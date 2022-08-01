@@ -82,6 +82,10 @@ void HAL_GPIO_EXTI_Callback(uint16_t pin) {
     st25r95_irq_callback();
   }
 }
+
+void st25_card_callback(uint8_t* uid) {
+  HAL_Delay(uid[0]);
+}
 /* USER CODE END 0 */
 
 /**
@@ -119,7 +123,7 @@ int main(void) {
   st25r95_status_t err;
   st25r95_14443A(ST25_26K_106K, ST25_26K_106K);
   st25r95_write_timerw(0x58);
-  st25r95_write_ARC(1, 0xD3);
+  st25r95_write_ARC(1, 0xD1);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -128,6 +132,7 @@ int main(void) {
   st25r95_calibrate();
   st25r95_idle();
   while (1) {
+    st25r95_service(st25_card_callback);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
