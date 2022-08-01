@@ -42,7 +42,12 @@ void HAL_GPIO_EXTI_Callback(uint16_t pin) {
   if (pin == GPIO_YOUR_IRQ_OUT_INTERRUPT_PIN) {
     st25r95_irq_callback();
   }    
-}    
+}
+
+// Define a callback function when tag detected
+void st25_card_callback(uint8_t* uid) {
+  debug_print(uid, 10);
+}
 ```
 
 ### Main function
@@ -69,7 +74,7 @@ int main() {
   // Passing DACRef value into idle command.
   st25r95_idle(DACRef);
   while(1) {
-    
+    st25r95_service(st25_card_callback);
   }
   
   return 0;
