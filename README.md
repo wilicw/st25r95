@@ -36,6 +36,18 @@ void st25r95_tx(uint8_t *data, size_t len) {
 void st25r95_rx(uint8_t *data, size_t len) {
   HAL_SPI_Receive(&hspi1, data, len, HAL_MAX_DELAY);
 }
+
+// Interrupt callback function
+void HAL_GPIO_EXTI_Callback(uint16_t pin) {
+  if (pin == GPIO_YOUR_IRQ_OUT_INTERRUPT_PIN) {
+    st25r95_irq_callback();
+  }    
+}
+
+// Define a callback function when tag detected
+void st25_card_callback(uint8_t* uid) {
+  debug_print(uid, 10);
+}
 ```
 
 ### Main function
@@ -57,10 +69,12 @@ int main() {
   
   // Define a 10byte uid variable.
   uint8_t uid[10];
+  // Calibration
+  uint8_t DACRef = st25r95_calibrate();
+  // Passing DACRef value into idle command.
+  st25r95_idle(DACRef);
   while(1) {
-    if (st25r95_14443A_detect(uid)) {
-      debug_print(uid, 10);
-    }
+    st25r95_service(st25_card_callback);
   }
   
   return 0;

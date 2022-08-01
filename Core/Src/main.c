@@ -26,7 +26,6 @@
 /* USER CODE BEGIN Includes */
 #include "st25r95.h"
 #include <stdlib.h>
-#include <stdio.h>
 #include "core_cm0plus.h"
 /* USER CODE END Includes */
 
@@ -58,9 +57,6 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-void st25r95_delay(uint32_t time) {
-  HAL_Delay(time);
-}
 
 void st25r95_irq_pulse() {
   HAL_GPIO_WritePin(GPIOA, GPIO_PIN_9, GPIO_PIN_RESET);
@@ -79,6 +75,16 @@ void st25r95_tx(uint8_t *data, size_t len) {
 
 void st25r95_rx(uint8_t *data, size_t len) {
   HAL_SPI_Receive(&hspi1, data, len, HAL_MAX_DELAY);
+}
+
+void HAL_GPIO_EXTI_Callback(uint16_t pin) {
+  if (pin == GPIO_PIN_10) {
+    st25r95_irq_callback();
+  }
+}
+
+void st25_card_callback(uint8_t* uid) {
+  HAL_Delay(uid[0]);
 }
 /* USER CODE END 0 */
 
@@ -114,23 +120,25 @@ int main(void) {
   /* USER CODE BEGIN 2 */
   st25r95_init();
   st25r95_IDN();
-  HAL_Delay(1000);
   st25r95_status_t err;
   st25r95_14443A(ST25_26K_106K, ST25_26K_106K);
   st25r95_write_timerw(0x58);
-  st25r95_write_ARC(1, 0xD3);
+  st25r95_write_ARC(1, 0xD1);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  uint8_t uid[10];
+
+  st25r95_calibrate();
+  st25r95_idle();
   while (1) {
+    st25r95_service(st25_card_callback);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    if (st25r95_14443A_detect(uid)) {
-      st25r95_delay(1);
-    }
+//    if (st25r95_14443A_detect(uid)) {
+//      st25r95_delay(1);
+//    }
 //    HAL_Delay(3000);
   }
   /* USER CODE END 3 */
