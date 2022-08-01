@@ -307,8 +307,8 @@ st25r95_status_t st25r95_idle() {
   tx_buffer[tx_len++] = 0x20;
   tx_buffer[tx_len++] = 0x60;
   tx_buffer[tx_len++] = 0x60;
-  tx_buffer[tx_len++] = DACRef + 8;
   tx_buffer[tx_len++] = DACRef - 8;
+  tx_buffer[tx_len++] = DACRef + 8;
   tx_buffer[tx_len++] = 0x3F;
   tx_buffer[tx_len++] = 0x01;
 
