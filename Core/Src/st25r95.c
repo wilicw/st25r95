@@ -15,6 +15,7 @@ __weak void st25r95_irq_pulse() {}
 volatile static uint8_t tx_buffer[256];
 volatile static size_t tx_len;
 volatile uint8_t irq_flag = 0;
+static uint8_t DACRef = 0x6C;
 
 void st25r95_spi_tx() {
   st25r95_tx(tx_buffer, tx_len);
@@ -291,7 +292,7 @@ void st25r95_14443A_select(uint8_t level, uint8_t *data, uint8_t uid0, uint8_t u
   memcpy(data, res + 2, res[1]);
 }
 
-st25r95_status_t st25r95_idle(uint8_t DACRef) {
+st25r95_status_t st25r95_idle() {
   tx_len = 0;
   tx_buffer[tx_len++] = ST25_SEND;
   tx_buffer[tx_len++] = ST25_IDLE;
@@ -315,11 +316,13 @@ st25r95_status_t st25r95_idle(uint8_t DACRef) {
   st25r95_spi_tx();
   st25r95_nss(0);
 
-  uint8_t *res = st25r95_response();
-  return res[0];
+  reader_state = ST25_STATE_IDLE;
+
+//  uint8_t *res = st25r95_response();
+//  return res[0];
 }
 
-uint8_t st25r95_calibrate() {
+void st25r95_calibrate() {
   static uint8_t calibrate_data[] = {
     ST25_SEND,
     ST25_IDLE,
@@ -407,5 +410,5 @@ uint8_t st25r95_calibrate() {
     }
   }
 
-  return calibrate_data[14];
+  DACRef = calibrate_data[14];
 }

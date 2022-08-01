@@ -125,9 +125,8 @@ int main(void) {
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 
-  uint8_t DACRef = st25r95_calibrate();
-  st25r95_idle(DACRef);
-  uint8_t uid[10];
+  st25r95_calibrate();
+  st25r95_idle();
   while (1) {
     /* USER CODE END WHILE */
 
