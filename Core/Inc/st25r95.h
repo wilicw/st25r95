@@ -128,42 +128,67 @@ typedef enum {
   ST25_STATE_IDLE,
 } st25r95_state_t;
 
-typedef void (*st25_callback)(uint8_t *);
+typedef void (*st25r95_nss)(uint8_t);
 
-void st25r95_init();
+typedef void (*st25r95_tx)(uint8_t *, size_t);
 
-void st25r95_reset();
+typedef void (*st25r95_rx)(uint8_t *, size_t);
 
-void st25r95_irq_callback();
+typedef void (*st25r95_irq_pulse)();
 
-st25r95_status_t st25r95_IDN();
+typedef void (*st25r95_callback)(uint8_t *);
 
-st25r95_status_t st25r95_off();
+typedef struct {
+  /* Reader state and variables */
+  st25r95_state_t state;
+  st25r95_protocol_t protocol;
+  uint8_t DACRef;
+  st25r95_rate_t tx_speed;
+  st25r95_rate_t rx_speed;
+  uint8_t timerw;
+  uint8_t ARC;
+  uint8_t uid[10];
+  volatile uint8_t irq_flag;
+  /* BSP Functions */
+  st25r95_callback callback;
+  st25r95_nss nss;
+  st25r95_tx tx;
+  st25r95_rx rx;
+  st25r95_irq_pulse irq_pulse;
+} st25r95_handle;
 
-st25r95_status_t st25r95_14443A(st25r95_rate_t, st25r95_rate_t);
+void st25r95_init(st25r95_handle *);
 
-st25r95_status_t st25r95_read_reg(uint8_t, uint8_t *);
+void st25r95_reset(st25r95_handle *);
 
-st25r95_status_t st25r95_write_timerw(uint8_t);
+st25r95_status_t st25r95_IDN(st25r95_handle *);
 
-st25r95_status_t st25r95_write_ARC_index(uint8_t);
+st25r95_status_t st25r95_off(st25r95_handle *);
 
-st25r95_status_t st25r95_write_ARC(uint8_t, uint8_t);
+st25r95_status_t st25r95_14443A(st25r95_handle *);
 
-st25r95_status_t st25r95_echo();
+st25r95_status_t st25r95_read_reg(st25r95_handle *, uint8_t, uint8_t *);
 
-void st25r95_14443A_REQA(uint8_t *);
+st25r95_status_t st25r95_write_timerw(st25r95_handle *, uint8_t);
 
-void st25r95_14443A_ANTICOLLISION(uint8_t, uint8_t *);
+st25r95_status_t st25r95_write_ARC_index(st25r95_handle *, uint8_t);
 
-void st25r95_14443A_select(uint8_t, uint8_t *, uint8_t, uint8_t, uint8_t, uint8_t);
+st25r95_status_t st25r95_write_ARC(st25r95_handle *, uint8_t, uint8_t);
 
-uint8_t st25r95_14443A_detect(uint8_t *);
+st25r95_status_t st25r95_echo(st25r95_handle *);
 
-st25r95_status_t st25r95_idle();
+void st25r95_14443A_REQA(st25r95_handle *, uint8_t *);
 
-void st25r95_calibrate();
+void st25r95_14443A_ANTICOLLISION(st25r95_handle *, uint8_t, uint8_t *);
 
-void st25r95_service(st25_callback);
+void st25r95_14443A_select(st25r95_handle *, uint8_t, uint8_t *, uint8_t, uint8_t, uint8_t, uint8_t);
+
+uint8_t st25r95_14443A_detect(st25r95_handle *);
+
+void st25r95_idle(st25r95_handle *);
+
+void st25r95_calibrate(st25r95_handle *);
+
+void st25r95_service(st25r95_handle *);
 
 #endif
