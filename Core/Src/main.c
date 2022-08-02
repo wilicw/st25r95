@@ -57,33 +57,34 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+volatile st25r95_handle reader_handler;
 
-void st25r95_irq_pulse() {
+void reader_irq_pulse() {
   HAL_GPIO_WritePin(GPIOA, GPIO_PIN_9, GPIO_PIN_RESET);
   HAL_Delay(1);
   HAL_GPIO_WritePin(GPIOA, GPIO_PIN_9, GPIO_PIN_SET);
-  HAL_Delay(10);
+  HAL_Delay(8);
 }
 
-void st25r95_nss(uint8_t enable) {
+void reader_nss(uint8_t enable) {
   HAL_GPIO_WritePin(GPIOB, GPIO_PIN_6, enable ? GPIO_PIN_RESET : GPIO_PIN_SET);
 }
 
-void st25r95_tx(uint8_t *data, size_t len) {
+void reader_tx(uint8_t *data, size_t len) {
   HAL_SPI_Transmit(&hspi1, data, len, HAL_MAX_DELAY);
 }
 
-void st25r95_rx(uint8_t *data, size_t len) {
+void reader_rx(uint8_t *data, size_t len) {
   HAL_SPI_Receive(&hspi1, data, len, HAL_MAX_DELAY);
 }
 
 void HAL_GPIO_EXTI_Callback(uint16_t pin) {
   if (pin == GPIO_PIN_10) {
-    st25r95_irq_callback();
+    reader_handler.irq_flag = 1;
   }
 }
 
-void st25_card_callback(uint8_t* uid) {
+void st25_card_callback(uint8_t *uid) {
   HAL_Delay(uid[0]);
 }
 /* USER CODE END 0 */
@@ -118,28 +119,35 @@ int main(void) {
   MX_USART2_UART_Init();
   MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
-  st25r95_init();
-  st25r95_IDN();
-  st25r95_status_t err;
-  st25r95_14443A(ST25_26K_106K, ST25_26K_106K);
-  st25r95_write_timerw(0x58);
-  st25r95_write_ARC(1, 0xD1);
+
+  /* Setup all protocol */
+  reader_handler.protocol = ST25_PROTOCOL_14443A;
+  reader_handler.tx_speed = ST25_26K_106K;
+  reader_handler.rx_speed = ST25_26K_106K;
+  reader_handler.timerw = 0x58;
+  reader_handler.ARC = 0xD1;
+  reader_handler.irq_flag = 0;
+
+  /* Bind BSP Functions */
+  reader_handler.nss = reader_nss;
+  reader_handler.tx = reader_tx;
+  reader_handler.rx = reader_rx;
+  reader_handler.irq_pulse = reader_irq_pulse;
+  reader_handler.callback = st25_card_callback;
+
+  st25r95_init(&reader_handler);
+  st25r95_calibrate(&reader_handler);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 
-  st25r95_calibrate();
-  st25r95_idle();
+  st25r95_idle(&reader_handler);
   while (1) {
-    st25r95_service(st25_card_callback);
+    st25r95_service(&reader_handler);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-//    if (st25r95_14443A_detect(uid)) {
-//      st25r95_delay(1);
-//    }
-//    HAL_Delay(3000);
   }
   /* USER CODE END 3 */
 }
